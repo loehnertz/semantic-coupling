@@ -25,7 +25,6 @@ class JavaSourceCodeParser(selectedNaturalLanguage: NaturalLanguage, fileName: S
                 .split(' ')
                 .flatMap { it.replace(NonWordCharacterRegex, " ").split(' ') }
                 .filter { !programmingLanguageStopWords.contains(it) }
-                .apply { forEach { println(it) } }
                 .flatMap { it.replace(CamelCaseRegex, CamelCaseToSpaceReplacement).split(' ') }
 
         return (tokens + stringLiterals).flatMap { it.split(Regex("\\t")) }
