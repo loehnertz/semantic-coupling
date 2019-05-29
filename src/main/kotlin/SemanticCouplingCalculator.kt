@@ -3,25 +3,29 @@ package codes.jakob.semanticcoupling
 import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.model.NaturalLanguage
+import codes.jakob.semanticcoupling.model.NaturalLanguage.Companion.getNaturalLanguageByName
 import codes.jakob.semanticcoupling.model.ProgrammingLanguage
 import codes.jakob.semanticcoupling.model.ProgrammingLanguage.Companion.getProgrammingLanguageByName
-import codes.jakob.semanticcoupling.parsing.languages.JavaSourceCodeParser
+import codes.jakob.semanticcoupling.parsing.programminglanguages.JavaSourceCodeParser
+import codes.jakob.semanticcoupling.stemming.StemRetriever
 import java.io.File
 
 
-class SemanticCouplingCalculator(selectedProgrammingLanguage: String, private val files: List<Map<String, String>>) {
-    private val naturalLanguage: NaturalLanguage = DefaultNaturalLanguage
-    private val programmingLanguage: ProgrammingLanguage = getProgrammingLanguageByName(selectedProgrammingLanguage)
+class SemanticCouplingCalculator(private val files: List<Map<String, String>>, private val programmingLanguage: ProgrammingLanguage, private val naturalLanguage: NaturalLanguage = DefaultNaturalLanguage) {
+    constructor(files: List<File>, selectedProgrammingLanguage: String, selectedNaturalLanguage: String) : this(files.map { mapOf(it.name to it.readText()) }, getProgrammingLanguageByName(selectedProgrammingLanguage), getNaturalLanguageByName(selectedNaturalLanguage))
 
     fun calculate() {
-        val documents: ArrayList<Document> = arrayListOf()
+        var corpus = Corpus()
         for (file: Map<String, String> in files) {
             for ((fileName: String, fileContents: String) in file) {
-                documents.add(parseFile(fileName, fileContents))
+                val document: Document = parseFile(fileName, fileContents)
+                corpus.documents.add(document)
             }
         }
 
-        val corpus = Corpus(documents = documents)
+        corpus = StemRetriever(naturalLanguage, corpus).stemDocuments()
+
+        println(corpus)
     }
 
     private fun parseFile(fileName: String, fileContents: String): Document {
@@ -30,11 +34,7 @@ class SemanticCouplingCalculator(selectedProgrammingLanguage: String, private va
         }
     }
 
-    companion object {
+    companion object Constants {
         private val DefaultNaturalLanguage = NaturalLanguage.EN
-
-        fun initWithFiles(language: String, files: List<File>): SemanticCouplingCalculator {
-            return SemanticCouplingCalculator(language, files.map { mapOf(it.name to it.readText()) })
-        }
     }
 }
