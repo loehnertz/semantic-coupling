@@ -7,14 +7,15 @@ import codes.jakob.semanticcoupling.model.NaturalLanguage.Companion.getNaturalLa
 import codes.jakob.semanticcoupling.model.ProgrammingLanguage
 import codes.jakob.semanticcoupling.model.ProgrammingLanguage.Companion.getProgrammingLanguageByName
 import codes.jakob.semanticcoupling.parsing.programminglanguages.JavaSourceCodeParser
+import codes.jakob.semanticcoupling.similarity.SimilarityCalculator
 import codes.jakob.semanticcoupling.stemming.StemRetriever
-import java.io.File
+import codes.jakob.semanticcoupling.tfidf.TfIdfCalculator
 
 
 class SemanticCouplingCalculator(private val files: List<Map<String, String>>, private val programmingLanguage: ProgrammingLanguage, private val naturalLanguage: NaturalLanguage = DefaultNaturalLanguage) {
-    constructor(files: List<File>, selectedProgrammingLanguage: String, selectedNaturalLanguage: String) : this(files.map { mapOf(it.name to it.readText()) }, getProgrammingLanguageByName(selectedProgrammingLanguage), getNaturalLanguageByName(selectedNaturalLanguage))
+    constructor(files: List<Map<String, String>>, selectedProgrammingLanguage: String, selectedNaturalLanguage: String) : this(files, getProgrammingLanguageByName(selectedProgrammingLanguage), getNaturalLanguageByName(selectedNaturalLanguage))
 
-    fun calculate() {
+    fun calculate(): List<Triple<String, String, Double>> {
         var corpus = Corpus()
         for (file: Map<String, String> in files) {
             for ((fileName: String, fileContents: String) in file) {
@@ -24,8 +25,11 @@ class SemanticCouplingCalculator(private val files: List<Map<String, String>>, p
         }
 
         corpus = StemRetriever(naturalLanguage, corpus).stemDocuments()
+        corpus = TfIdfCalculator(corpus).calculateForAllTerms()
 
-        println(corpus)
+        val similarities: List<Triple<Document, Document, Double>> = SimilarityCalculator(corpus).calculateDocumentSimilarities()
+
+        return similarities.map { Triple(it.first.name, it.second.name, it.third) }
     }
 
     private fun parseFile(fileName: String, fileContents: String): Document {
