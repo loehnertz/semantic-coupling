@@ -2,5 +2,5 @@ package codes.jakob.semanticcoupling.model
 
 
 data class Corpus(
-    val documents: List<Document>
+    val documents: ArrayList<Document> = arrayListOf()
 )
