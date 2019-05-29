@@ -3,6 +3,7 @@ package codes.jakob.semanticcoupling.stemming
 import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.model.NaturalLanguage
+import codes.jakob.semanticcoupling.model.Term
 import codes.jakob.semanticcoupling.stemming.StemRetriever.Constants.EndingsBasePath
 import codes.jakob.semanticcoupling.stemming.StemRetriever.Constants.NaturalLanguagesStopWordPath
 import codes.jakob.semanticcoupling.utility.Utilities.getResourceAsText
@@ -16,7 +17,10 @@ class StemRetriever(private val naturalLanguage: NaturalLanguage, private val co
         val documents: ArrayList<Document> = ArrayList(corpus.documents.map { document ->
             Document(
                 name = document.name,
-                content = document.content.map { it.replace(concatinatedRegex, "") }.filter { isNonEmptyWordEntry(it) }
+                terms = document.terms
+                    .map { it.word.replace(concatinatedRegex, "") }
+                    .filter { isNonEmptyWordEntry(it) }
+                    .map { Term(word = it) }
             )
         })
 

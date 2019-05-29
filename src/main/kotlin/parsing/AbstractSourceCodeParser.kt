@@ -3,6 +3,7 @@ package codes.jakob.semanticcoupling.parsing
 import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.model.NaturalLanguage
 import codes.jakob.semanticcoupling.model.ProgrammingLanguage
+import codes.jakob.semanticcoupling.model.Term
 import codes.jakob.semanticcoupling.utility.Utilities.getResourceAsText
 import codes.jakob.semanticcoupling.utility.Utilities.isNonEmptyWordEntry
 
@@ -22,7 +23,7 @@ abstract class AbstractSourceCodeParser(selectedNaturalLanguage: NaturalLanguage
     private val naturalLanguageStopWords: List<String> = retrieveNaturalLanguageStopWords(selectedNaturalLanguage)
 
     fun parse(): Document {
-        val tokenizedFileContents: List<String> =
+        val tokenizedFileContents: List<Term> =
             fileContents
                 .split("\n")
                 .filter { !isPackage(it) }
@@ -35,9 +36,10 @@ abstract class AbstractSourceCodeParser(selectedNaturalLanguage: NaturalLanguage
                 .filter { !it.matches(SingleCharacterRegex) }
                 .filter { isNonEmptyWordEntry(it) }
                 .map { it.toLowerCase() }
+                .map { Term(word = it) }
                 .toList()
 
-        return Document(name = fileName, content = tokenizedFileContents)
+        return Document(name = fileName, terms = tokenizedFileContents)
     }
 
     private fun isPackage(line: String): Boolean {
