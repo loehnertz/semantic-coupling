@@ -8,7 +8,6 @@ import codes.jakob.semanticcoupling.model.ProgrammingLanguage
 import codes.jakob.semanticcoupling.model.ProgrammingLanguage.Companion.getProgrammingLanguageByName
 import codes.jakob.semanticcoupling.parsing.programminglanguages.JavaSourceCodeParser
 import codes.jakob.semanticcoupling.similarity.SimilarityCalculator
-import codes.jakob.semanticcoupling.stemming.StemRetriever
 import codes.jakob.semanticcoupling.tfidf.TfIdfCalculator
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
@@ -17,9 +16,11 @@ import kotlinx.coroutines.runBlocking
 import java.io.File
 
 
+@Suppress("unused")
 class SemanticCouplingCalculator(private val files: List<Map<String, String>>, private val programmingLanguage: ProgrammingLanguage, private val naturalLanguage: NaturalLanguage = DefaultNaturalLanguage) {
     constructor(files: List<Map<String, String>>, selectedProgrammingLanguage: String, selectedNaturalLanguage: String) : this(files, getProgrammingLanguageByName(selectedProgrammingLanguage), getNaturalLanguageByName(selectedNaturalLanguage))
 
+    private var useLemmatization = true
     private val similarities: ArrayList<Triple<String, String, Double>> = arrayListOf()
 
     fun calculate() {
@@ -32,7 +33,6 @@ class SemanticCouplingCalculator(private val files: List<Map<String, String>>, p
 
         runBlocking {
             var corpus = Corpus(ArrayList(deferredDocuments.map { it.await() }))
-            corpus = StemRetriever(naturalLanguage, corpus).stemDocuments()
             corpus = TfIdfCalculator(corpus).calculateForAllTerms()
 
             val documentSimilarities: List<Triple<Document, Document, Double>> = SimilarityCalculator(corpus).calculateDocumentSimilarities()
@@ -48,9 +48,17 @@ class SemanticCouplingCalculator(private val files: List<Map<String, String>>, p
         return similarities.map { listOf(it.first, it.second, it.third.toString()) }
     }
 
+    fun useStemming() {
+        useLemmatization = false
+    }
+
+    fun useLemmatization() {
+        useLemmatization = true
+    }
+
     private fun parseFile(fileName: String, fileContents: String): Document {
         return when (programmingLanguage) {
-            ProgrammingLanguage.JAVA -> JavaSourceCodeParser(naturalLanguage, fileName, fileContents).parse()
+            ProgrammingLanguage.JAVA -> JavaSourceCodeParser(naturalLanguage, fileName, fileContents, useLemmatization).parse()
         }
     }
 
