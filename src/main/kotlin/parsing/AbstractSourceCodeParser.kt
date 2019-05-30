@@ -4,11 +4,14 @@ import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.model.NaturalLanguage
 import codes.jakob.semanticcoupling.model.ProgrammingLanguage
 import codes.jakob.semanticcoupling.model.Term
+import codes.jakob.semanticcoupling.normalization.Lemmatizer
+import codes.jakob.semanticcoupling.normalization.Normalizer
+import codes.jakob.semanticcoupling.normalization.Stemmer
 import codes.jakob.semanticcoupling.utility.Utilities.getResourceAsText
 import codes.jakob.semanticcoupling.utility.Utilities.isNonEmptyWordEntry
 
 
-abstract class AbstractSourceCodeParser(selectedNaturalLanguage: NaturalLanguage, private val fileName: String, private val fileContents: String) {
+abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: NaturalLanguage, private val fileName: String, private val fileContents: String, private val useLemmatizer: Boolean) {
     abstract val packageRegex: Regex
 
     abstract val importRegex: Regex
@@ -23,6 +26,8 @@ abstract class AbstractSourceCodeParser(selectedNaturalLanguage: NaturalLanguage
     private val naturalLanguageStopWords: List<String> = retrieveNaturalLanguageStopWords(selectedNaturalLanguage)
 
     fun parse(): Document {
+        val normalizer: Normalizer = retrieveNormalizer()
+
         val tokenizedFileContents: List<Term> =
             fileContents
                 .split("\n")
@@ -36,10 +41,29 @@ abstract class AbstractSourceCodeParser(selectedNaturalLanguage: NaturalLanguage
                 .filter { !it.matches(SingleCharacterRegex) }
                 .filter { isNonEmptyWordEntry(it) }
                 .map { it.toLowerCase() }
+                .map { normalizer.normalizeWord(it) }
                 .map { Term(word = it) }
                 .toList()
 
         return Document(name = fileName, terms = tokenizedFileContents)
+    }
+
+    fun retrieveProgrammingLanguageStopWords(programmingLanguage: ProgrammingLanguage): List<String> {
+        val stopWordsFile: String = getResourceAsText("$StopWordBasePath/$ProgrammingLanguagesStopWordPath/${programmingLanguage.name.toLowerCase()}.txt")
+        return stopWordsFile.split("\n").filter { it != "" }
+    }
+
+    private fun retrieveNaturalLanguageStopWords(naturalLanguage: NaturalLanguage): List<String> {
+        val stopWordsFile: String = getResourceAsText("$StopWordBasePath/$NaturalLanguagesStopWordPath/${naturalLanguage.name.toLowerCase()}.txt")
+        return stopWordsFile.split("\n").filter { it != "" }
+    }
+
+    private fun retrieveNormalizer(): Normalizer {
+        return if (useLemmatizer) {
+            Lemmatizer(selectedNaturalLanguage)
+        } else {
+            Stemmer(selectedNaturalLanguage)
+        }
     }
 
     private fun isPackage(line: String): Boolean {
@@ -52,16 +76,6 @@ abstract class AbstractSourceCodeParser(selectedNaturalLanguage: NaturalLanguage
 
     private fun isComment(line: String): Boolean {
         return commentRegex.containsMatchIn(line)
-    }
-
-    fun retrieveProgrammingLanguageStopWords(programmingLanguage: ProgrammingLanguage): List<String> {
-        val stopWordsFile: String = getResourceAsText("$StopWordBasePath/$ProgrammingLanguagesStopWordPath/${programmingLanguage.name.toLowerCase()}.txt")
-        return stopWordsFile.split("\n").filter { it != "" }
-    }
-
-    private fun retrieveNaturalLanguageStopWords(naturalLanguage: NaturalLanguage): List<String> {
-        val stopWordsFile: String = getResourceAsText("$StopWordBasePath/$NaturalLanguagesStopWordPath/${naturalLanguage.name.toLowerCase()}.txt")
-        return stopWordsFile.split("\n").filter { it != "" }
     }
 
     companion object Constants {

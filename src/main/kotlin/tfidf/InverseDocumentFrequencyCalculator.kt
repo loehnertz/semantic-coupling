@@ -3,7 +3,6 @@ package codes.jakob.semanticcoupling.tfidf
 import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.model.Term
-import kotlin.math.ln
 
 
 class InverseDocumentFrequencyCalculator(private val corpus: Corpus) {

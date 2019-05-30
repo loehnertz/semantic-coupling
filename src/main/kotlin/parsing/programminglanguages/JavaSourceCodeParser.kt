@@ -5,7 +5,7 @@ import codes.jakob.semanticcoupling.model.ProgrammingLanguage
 import codes.jakob.semanticcoupling.parsing.AbstractSourceCodeParser
 
 
-class JavaSourceCodeParser(selectedNaturalLanguage: NaturalLanguage, fileName: String, fileContents: String) : AbstractSourceCodeParser(selectedNaturalLanguage, fileName, fileContents) {
+class JavaSourceCodeParser(selectedNaturalLanguage: NaturalLanguage, fileName: String, fileContents: String, useLemmatization: Boolean) : AbstractSourceCodeParser(selectedNaturalLanguage, fileName, fileContents, useLemmatization) {
     override val programmingLanguageStopWords: List<String> = retrieveProgrammingLanguageStopWords(ParserProgrammingLanguage)
     override val packageRegex: Regex = PackageRegex
     override val importRegex: Regex = ImportRegex
