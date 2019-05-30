@@ -14,6 +14,6 @@ class InverseDocumentFrequencyCalculator(private val corpus: Corpus) {
             if (document.terms.contains(termToCheck)) numberOfDocumentsWithTermToCheck++
         }
 
-        return ln((corpus.documents.size.toDouble() / numberOfDocumentsWithTermToCheck))
+        return Math.log((corpus.documents.size.toDouble() / numberOfDocumentsWithTermToCheck))
     }
 }
