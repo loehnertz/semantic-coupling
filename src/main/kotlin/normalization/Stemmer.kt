@@ -1,4 +1,4 @@
-package codes.jakob.semanticcoupling.stemming
+package codes.jakob.semanticcoupling.normalization
 
 import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
