@@ -10,6 +10,11 @@ import codes.jakob.semanticcoupling.parsing.programminglanguages.JavaSourceCodeP
 import codes.jakob.semanticcoupling.similarity.SimilarityCalculator
 import codes.jakob.semanticcoupling.stemming.StemRetriever
 import codes.jakob.semanticcoupling.tfidf.TfIdfCalculator
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import java.io.File
 
 
 class SemanticCouplingCalculator(private val files: List<Map<String, String>>, private val programmingLanguage: ProgrammingLanguage, private val naturalLanguage: NaturalLanguage = DefaultNaturalLanguage) {
@@ -18,20 +23,21 @@ class SemanticCouplingCalculator(private val files: List<Map<String, String>>, p
     private val similarities: ArrayList<Triple<String, String, Double>> = arrayListOf()
 
     fun calculate() {
-        var corpus = Corpus()
+        val deferredDocuments: ArrayList<Deferred<Document>> = arrayListOf()
         for (file: Map<String, String> in files) {
             for ((fileName: String, fileContents: String) in file) {
-                val document: Document = parseFile(fileName, fileContents)
-                corpus.documents.add(document)
+                deferredDocuments.add(GlobalScope.async { parseFile(fileName, fileContents) })
             }
         }
 
-        corpus = StemRetriever(naturalLanguage, corpus).stemDocuments()
-        corpus = TfIdfCalculator(corpus).calculateForAllTerms()
+        runBlocking {
+            var corpus = Corpus(ArrayList(deferredDocuments.map { it.await() }))
+            corpus = StemRetriever(naturalLanguage, corpus).stemDocuments()
+            corpus = TfIdfCalculator(corpus).calculateForAllTerms()
 
-        val documentSimilarities: List<Triple<Document, Document, Double>> = SimilarityCalculator(corpus).calculateDocumentSimilarities()
-
-        documentSimilarities.forEach { similarities.add(Triple(it.first.name, it.second.name, it.third)) }
+            val documentSimilarities: List<Triple<Document, Document, Double>> = SimilarityCalculator(corpus).calculateDocumentSimilarities()
+            documentSimilarities.forEach { similarities.add(Triple(it.first.name, it.second.name, it.third)) }
+        }
     }
 
     fun retrieveSimilaritiesAsListOfTriples(): List<Triple<String, String, Double>> {
