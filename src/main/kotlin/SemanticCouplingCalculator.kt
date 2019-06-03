@@ -1,10 +1,7 @@
 package codes.jakob.semanticcoupling
 
-import codes.jakob.semanticcoupling.model.Corpus
-import codes.jakob.semanticcoupling.model.Document
-import codes.jakob.semanticcoupling.model.NaturalLanguage
+import codes.jakob.semanticcoupling.model.*
 import codes.jakob.semanticcoupling.model.NaturalLanguage.Companion.getNaturalLanguageByName
-import codes.jakob.semanticcoupling.model.ProgrammingLanguage
 import codes.jakob.semanticcoupling.model.ProgrammingLanguage.Companion.getProgrammingLanguageByName
 import codes.jakob.semanticcoupling.parsing.programminglanguages.JavaSourceCodeParser
 import codes.jakob.semanticcoupling.similarity.SimilarityCalculator
@@ -17,11 +14,11 @@ import java.io.File
 
 
 @Suppress("unused")
-class SemanticCouplingCalculator(private val files: List<Map<String, String>>, private val programmingLanguage: ProgrammingLanguage, private val naturalLanguage: NaturalLanguage = DefaultNaturalLanguage) {
-    constructor(files: List<Map<String, String>>, selectedProgrammingLanguage: String, selectedNaturalLanguage: String) : this(files, getProgrammingLanguageByName(selectedProgrammingLanguage), getNaturalLanguageByName(selectedNaturalLanguage))
+class SemanticCouplingCalculator(private val files: List<Map<String, String>>, private val programmingLanguage: ProgrammingLanguage, private val naturalLanguage: NaturalLanguage = DefaultNaturalLanguage, private val fileSimilaritiesToCalculate: List<Pair<String, String>>? = null) {
+    constructor(files: List<Map<String, String>>, selectedProgrammingLanguage: String, selectedNaturalLanguage: String, fileSimilaritiesToCalculate: List<List<String>>? = null) : this(files, getProgrammingLanguageByName(selectedProgrammingLanguage), getNaturalLanguageByName(selectedNaturalLanguage), fileSimilaritiesToCalculate?.map { Pair(it.first(), it.last()) })
 
     private var useLemmatization = true
-    private val similarities: ArrayList<Triple<String, String, Double>> = arrayListOf()
+    private val similarities: ArrayList<SemanticCoupling> = arrayListOf()
 
     fun calculate() {
         val deferredDocuments: ArrayList<Deferred<Document>> = arrayListOf()
@@ -33,19 +30,19 @@ class SemanticCouplingCalculator(private val files: List<Map<String, String>>, p
 
         runBlocking {
             var corpus = Corpus(ArrayList(deferredDocuments.map { it.await() }))
-            corpus = TfIdfCalculator(corpus).calculateForAllTerms()
+            corpus = TfIdfCalculator(corpus, fileSimilaritiesToCalculate).calculateForAllTerms()
 
-            val documentSimilarities: List<Triple<Document, Document, Double>> = SimilarityCalculator(corpus).calculateDocumentSimilarities()
-            documentSimilarities.forEach { similarities.add(Triple(it.first.name, it.second.name, it.third)) }
+            val documentSimilarities: List<SemanticCoupling> = SimilarityCalculator(corpus, fileSimilaritiesToCalculate).calculateDocumentSimilarities()
+            documentSimilarities.forEach { similarities.add(it) }
         }
     }
 
     fun retrieveSimilaritiesAsListOfTriples(): List<Triple<String, String, Double>> {
-        return similarities.toList()
+        return similarities.map { Triple(it.documents.first.name, it.documents.second.name, it.score) }
     }
 
     fun retrieveSimilaritiesAsListsOfLists(): List<List<String>> {
-        return similarities.map { listOf(it.first, it.second, it.third.toString()) }
+        return similarities.map { listOf(it.documents.first.name, it.documents.second.name, it.score.toString()) }
     }
 
     fun useStemming() {

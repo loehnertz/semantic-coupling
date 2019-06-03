@@ -2,15 +2,17 @@ package codes.jakob.semanticcoupling.similarity
 
 import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
+import codes.jakob.semanticcoupling.model.SemanticCoupling
 
 
-class SimilarityCalculator(private val corpus: Corpus) {
-    fun calculateDocumentSimilarities(): List<Triple<Document, Document, Double>> {
-        val documentSimilarities: ArrayList<Triple<Document, Document, Double>> = arrayListOf()
+class SimilarityCalculator(private val corpus: Corpus, private val documentSimilaritiesToCalculate: List<Pair<String, String>>?) {
+    fun calculateDocumentSimilarities(): List<SemanticCoupling> {
+        val documentSimilarities: ArrayList<SemanticCoupling> = arrayListOf()
 
         for (document1: Document in corpus.documents) {
             for (document2: Document in corpus.documents) {
                 if (document1 == document2) continue
+                if (!documentSimilarityShouldBeCalculated(document1, document2)) continue
                 if (documentSimilarities.firstOrNull { documentTripleSimilarityAlreadyCalculated(it, document1, document2) } != null) continue
 
                 val allWords: List<String> = (document1.terms + document2.terms).map { it.word }.distinct().sorted()
@@ -24,11 +26,11 @@ class SimilarityCalculator(private val corpus: Corpus) {
                 }
 
                 val cosineSimilarity: Double = calculateCosineSimilarity(document1WordVector.toTypedArray(), document2WordVector.toTypedArray())
-                documentSimilarities.add(Triple(document1, document2, cosineSimilarity))
+                documentSimilarities.add(SemanticCoupling(documents = Pair(document1, document2), score = cosineSimilarity))
             }
         }
 
-        return documentSimilarities.toList().sortedByDescending { it.third }
+        return documentSimilarities.toList().sortedByDescending { it.score }
     }
 
     private fun calculateCosineSimilarity(vector1: Array<Double>, vector2: Array<Double>): Double {
@@ -48,7 +50,12 @@ class SimilarityCalculator(private val corpus: Corpus) {
         return cosineSimilarity
     }
 
-    private fun documentTripleSimilarityAlreadyCalculated(similarityTriple: Triple<Document, Document, Double>, document1: Document, document2: Document): Boolean {
-        return ((similarityTriple.first == document1 && similarityTriple.second == document2) || (similarityTriple.first == document2 && similarityTriple.second == document1))
+    private fun documentSimilarityShouldBeCalculated(document1: Document, document2: Document): Boolean {
+        if (documentSimilaritiesToCalculate == null) return true
+        return documentSimilaritiesToCalculate.contains(Pair(document1.name, document2.name))
+    }
+
+    private fun documentTripleSimilarityAlreadyCalculated(semanticCoupling: SemanticCoupling, document1: Document, document2: Document): Boolean {
+        return ((semanticCoupling.documents.first == document1 && semanticCoupling.documents.second == document2) || (semanticCoupling.documents.first == document2 && semanticCoupling.documents.second == document1))
     }
 }
