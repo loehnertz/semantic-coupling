@@ -10,7 +10,6 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import java.io.File
 
 
 @Suppress("unused")
