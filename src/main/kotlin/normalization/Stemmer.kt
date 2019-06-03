@@ -21,7 +21,7 @@ class Stemmer(private val naturalLanguage: NaturalLanguage) : Normalizer {
     }
 
     private fun retrieveAllEndings(): List<String> {
-        val endingsFile: String = getResourceAsText("$EndingsBasePath/$NaturalLanguagesStopWordPath/${naturalLanguage.name.toLowerCase()}.txt")
+        val endingsFile: String = getResourceAsText("/$EndingsBasePath/$NaturalLanguagesStopWordPath/${naturalLanguage.name.toLowerCase()}.txt")
         return endingsFile.split("\n").filter { it != "" }
     }
 

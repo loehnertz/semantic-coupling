@@ -49,12 +49,12 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
     }
 
     fun retrieveProgrammingLanguageStopWords(programmingLanguage: ProgrammingLanguage): List<String> {
-        val stopWordsFile: String = getResourceAsText("$StopWordBasePath/$ProgrammingLanguagesStopWordPath/${programmingLanguage.name.toLowerCase()}.txt")
+        val stopWordsFile: String = getResourceAsText("/$StopWordBasePath/$ProgrammingLanguagesStopWordPath/${programmingLanguage.name.toLowerCase()}.txt")
         return stopWordsFile.split("\n").filter { it != "" }
     }
 
     private fun retrieveNaturalLanguageStopWords(naturalLanguage: NaturalLanguage): List<String> {
-        val stopWordsFile: String = getResourceAsText("$StopWordBasePath/$NaturalLanguagesStopWordPath/${naturalLanguage.name.toLowerCase()}.txt")
+        val stopWordsFile: String = getResourceAsText("/$StopWordBasePath/$NaturalLanguagesStopWordPath/${naturalLanguage.name.toLowerCase()}.txt")
         return stopWordsFile.split("\n").filter { it != "" }
     }
 
