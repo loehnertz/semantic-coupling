@@ -5,11 +5,15 @@ import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.model.Term
 
 
-class TfIdfCalculator(private val corpus: Corpus) {
+class TfIdfCalculator(private val corpus: Corpus, documentSimilaritiesToCalculate: List<Pair<String, String>>?) {
+    private val documentsToConsider: Set<String>? = documentSimilaritiesToCalculate?.flatMap { listOf(it.first, it.second) }?.toSet()
+
     fun calculateForAllTerms(): Corpus {
         val idfCalculator = InverseDocumentFrequencyCalculator(corpus)
 
         for (document: Document in corpus.documents) {
+            if (documentsToConsider != null && !documentsToConsider.contains(document.name)) continue
+
             val tfCalculator = TermFrequencyCalculator(document)
 
             for (term: Term in document.terms) {
@@ -19,16 +23,6 @@ class TfIdfCalculator(private val corpus: Corpus) {
             }
         }
 
-        val documents: ArrayList<Document> = arrayListOf()
-        for (document: Document in corpus.documents) {
-            documents.add(
-                Document(
-                    name = document.name,
-                    terms = document.terms.distinct().sortedByDescending { it.tfidf!! }
-                )
-            )
-        }
-
-        return Corpus(documents)
+        return corpus
     }
 }
