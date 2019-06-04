@@ -20,6 +20,8 @@ class SemanticCouplingCalculator(private val files: List<Map<String, String>>, p
     private val similarities: ArrayList<SemanticCoupling> = arrayListOf()
 
     fun calculate() {
+        similarities.clear()
+
         val deferredDocuments: ArrayList<Deferred<Document>> = arrayListOf()
         for (file: Map<String, String> in files) {
             for ((fileName: String, fileContents: String) in file) {
