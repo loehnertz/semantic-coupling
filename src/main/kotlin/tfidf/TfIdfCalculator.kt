@@ -21,7 +21,7 @@ class TfIdfCalculator(private val corpus: Corpus, documentSimilaritiesToCalculat
         }
 
         return runBlocking {
-            return@runBlocking Corpus(ArrayList(deferredDocuments.map { it.await() }))
+            return@runBlocking Corpus(deferredDocuments.map { it.await() }.toMutableSet())
         }
     }
 
