@@ -1,14 +1,14 @@
-package codes.jakob.semanticcoupling.parsing
+package com.github.loehnertz.semanticcoupling.parsing
 
-import codes.jakob.semanticcoupling.model.Document
-import codes.jakob.semanticcoupling.model.NaturalLanguage
-import codes.jakob.semanticcoupling.model.ProgrammingLanguage
-import codes.jakob.semanticcoupling.model.Term
-import codes.jakob.semanticcoupling.normalization.Lemmatizer
-import codes.jakob.semanticcoupling.normalization.Normalizer
-import codes.jakob.semanticcoupling.normalization.Stemmer
-import codes.jakob.semanticcoupling.utility.Utilities.getResourceAsText
-import codes.jakob.semanticcoupling.utility.Utilities.isNonEmptyWordEntry
+import com.github.loehnertz.semanticcoupling.model.Document
+import com.github.loehnertz.semanticcoupling.model.NaturalLanguage
+import com.github.loehnertz.semanticcoupling.model.ProgrammingLanguage
+import com.github.loehnertz.semanticcoupling.model.Term
+import com.github.loehnertz.semanticcoupling.normalization.Lemmatizer
+import com.github.loehnertz.semanticcoupling.normalization.Normalizer
+import com.github.loehnertz.semanticcoupling.normalization.Stemmer
+import com.github.loehnertz.semanticcoupling.utility.Utilities.getResourceAsText
+import com.github.loehnertz.semanticcoupling.utility.Utilities.isNonEmptyWordEntry
 
 
 abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: NaturalLanguage, private val fileName: String, private val fileContents: String, private val useLemmatizer: Boolean) {

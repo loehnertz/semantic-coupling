@@ -1,6 +1,6 @@
-package codes.jakob.semanticcoupling.normalization
+package com.github.loehnertz.semanticcoupling.normalization
 
-import codes.jakob.semanticcoupling.model.NaturalLanguage
+import com.github.loehnertz.semanticcoupling.model.NaturalLanguage
 import edu.stanford.nlp.simple.Sentence
 
 

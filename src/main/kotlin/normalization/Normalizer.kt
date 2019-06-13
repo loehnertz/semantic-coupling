@@ -1,4 +1,4 @@
-package codes.jakob.semanticcoupling.normalization
+package com.github.loehnertz.semanticcoupling.normalization
 
 
 interface Normalizer {

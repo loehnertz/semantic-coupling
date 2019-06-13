@@ -1,12 +1,12 @@
-package codes.jakob.semanticcoupling
+package com.github.loehnertz.semanticcoupling
 
-import codes.jakob.semanticcoupling.lsi.LatentSemanticIndexer
-import codes.jakob.semanticcoupling.model.*
-import codes.jakob.semanticcoupling.model.NaturalLanguage.Companion.getNaturalLanguageByName
-import codes.jakob.semanticcoupling.model.ProgrammingLanguage.Companion.getProgrammingLanguageByName
-import codes.jakob.semanticcoupling.parsing.programminglanguages.JavaSourceCodeParser
-import codes.jakob.semanticcoupling.similarity.SimilarityCalculator
-import codes.jakob.semanticcoupling.tfidf.TfIdfCalculator
+import com.github.loehnertz.semanticcoupling.lsi.LatentSemanticIndexer
+import com.github.loehnertz.semanticcoupling.model.*
+import com.github.loehnertz.semanticcoupling.model.NaturalLanguage.Companion.getNaturalLanguageByName
+import com.github.loehnertz.semanticcoupling.model.ProgrammingLanguage.Companion.getProgrammingLanguageByName
+import com.github.loehnertz.semanticcoupling.parsing.programminglanguages.JavaSourceCodeParser
+import com.github.loehnertz.semanticcoupling.similarity.SimilarityCalculator
+import com.github.loehnertz.semanticcoupling.tfidf.TfIdfCalculator
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async

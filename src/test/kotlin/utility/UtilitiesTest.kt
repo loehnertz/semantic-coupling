@@ -1,6 +1,6 @@
 package utility
 
-import codes.jakob.semanticcoupling.utility.Utilities
+import com.github.loehnertz.semanticcoupling.utility.Utilities
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

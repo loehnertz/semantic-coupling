@@ -1,8 +1,8 @@
-package codes.jakob.semanticcoupling.tfidf
+package com.github.loehnertz.semanticcoupling.tfidf
 
-import codes.jakob.semanticcoupling.model.Corpus
-import codes.jakob.semanticcoupling.model.Document
-import codes.jakob.semanticcoupling.model.Term
+import com.github.loehnertz.semanticcoupling.model.Corpus
+import com.github.loehnertz.semanticcoupling.model.Document
+import com.github.loehnertz.semanticcoupling.model.Term
 
 
 class InverseDocumentFrequencyCalculator(private val corpus: Corpus) {

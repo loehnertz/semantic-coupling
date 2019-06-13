@@ -1,4 +1,4 @@
-package codes.jakob.semanticcoupling.utility
+package com.github.loehnertz.semanticcoupling.utility
 
 
 object Utilities {

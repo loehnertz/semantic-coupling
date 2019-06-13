@@ -1,8 +1,8 @@
-package codes.jakob.semanticcoupling.parsing.programminglanguages
+package com.github.loehnertz.semanticcoupling.parsing.programminglanguages
 
-import codes.jakob.semanticcoupling.model.NaturalLanguage
-import codes.jakob.semanticcoupling.model.ProgrammingLanguage
-import codes.jakob.semanticcoupling.parsing.AbstractSourceCodeParser
+import com.github.loehnertz.semanticcoupling.model.NaturalLanguage
+import com.github.loehnertz.semanticcoupling.model.ProgrammingLanguage
+import com.github.loehnertz.semanticcoupling.parsing.AbstractSourceCodeParser
 
 
 class JavaSourceCodeParser(selectedNaturalLanguage: NaturalLanguage, fileName: String, fileContents: String, useLemmatization: Boolean) : AbstractSourceCodeParser(selectedNaturalLanguage, fileName, fileContents, useLemmatization) {

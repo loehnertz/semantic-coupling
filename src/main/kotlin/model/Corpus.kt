@@ -1,4 +1,4 @@
-package codes.jakob.semanticcoupling.model
+package com.github.loehnertz.semanticcoupling.model
 
 
 data class Corpus(

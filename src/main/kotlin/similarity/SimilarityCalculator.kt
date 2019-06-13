@@ -1,9 +1,9 @@
-package codes.jakob.semanticcoupling.similarity
+package com.github.loehnertz.semanticcoupling.similarity
 
-import codes.jakob.semanticcoupling.lsi.LatentSemanticIndexer
-import codes.jakob.semanticcoupling.model.Corpus
-import codes.jakob.semanticcoupling.model.Document
-import codes.jakob.semanticcoupling.model.SemanticCoupling
+import com.github.loehnertz.semanticcoupling.lsi.LatentSemanticIndexer
+import com.github.loehnertz.semanticcoupling.model.Corpus
+import com.github.loehnertz.semanticcoupling.model.Document
+import com.github.loehnertz.semanticcoupling.model.SemanticCoupling
 
 
 class SimilarityCalculator(private val corpus: Corpus, private val documentSimilaritiesToCalculate: List<Pair<String, String>>?, private val useLsi: Boolean, numberOfLsiDimensions: Int, maxLsiEpochs: Int) {

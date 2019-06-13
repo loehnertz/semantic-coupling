@@ -1,4 +1,4 @@
-package codes.jakob.semanticcoupling
+package com.github.loehnertz.semanticcoupling
 
 
 fun main() {

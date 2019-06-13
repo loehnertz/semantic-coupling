@@ -1,9 +1,9 @@
-package codes.jakob.semanticcoupling.normalization
+package com.github.loehnertz.semanticcoupling.normalization
 
-import codes.jakob.semanticcoupling.model.NaturalLanguage
-import codes.jakob.semanticcoupling.normalization.Stemmer.Constants.EndingsBasePath
-import codes.jakob.semanticcoupling.normalization.Stemmer.Constants.NaturalLanguagesStopWordPath
-import codes.jakob.semanticcoupling.utility.Utilities.getResourceAsText
+import com.github.loehnertz.semanticcoupling.model.NaturalLanguage
+import com.github.loehnertz.semanticcoupling.normalization.Stemmer.Constants.EndingsBasePath
+import com.github.loehnertz.semanticcoupling.normalization.Stemmer.Constants.NaturalLanguagesStopWordPath
+import com.github.loehnertz.semanticcoupling.utility.Utilities.getResourceAsText
 
 
 class Stemmer(private val naturalLanguage: NaturalLanguage) : Normalizer {
