@@ -19,8 +19,8 @@ class SemanticCouplingCalculator(private val files: Map<String, String>, private
     private var useLsi = true
     private var numberOfLsiDimensions: Int = DefaultNumberOfLsiDimensions
     private var maxLsiEpochs: Int = DefaultMaxLsiEpochs
+    private val documentSimilarities: ArrayList<SemanticCoupling> = arrayListOf()
     private lateinit var corpus: Corpus
-    private var documentSimilarities: ArrayList<SemanticCoupling> = arrayListOf()
 
     fun calculate() = runBlocking {
         corpus = Corpus(files.entries.mapConcurrently { parseFile(fileName = it.key, fileContents = it.value) }.toMutableSet())
