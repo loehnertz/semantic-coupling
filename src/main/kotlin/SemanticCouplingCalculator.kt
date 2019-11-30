@@ -23,9 +23,10 @@ class SemanticCouplingCalculator(private val files: Map<String, String>, private
     private lateinit var corpus: Corpus
 
     fun calculate() = runBlocking {
+        documentSimilarities.clear()
         corpus = Corpus(files.entries.mapConcurrently { parseFile(fileName = it.key, fileContents = it.value) }.toMutableSet())
         corpus = TfIdfCalculator(corpus, if (useLsi) null else fileSimilaritiesToCalculate).calculateForAllTerms()
-        SimilarityCalculator(corpus, fileSimilaritiesToCalculate, useLsi, numberOfLsiDimensions, maxLsiEpochs).calculateDocumentSimilarities().forEach { documentSimilarities.add(it) }.also { documentSimilarities.clear() }
+        SimilarityCalculator(corpus, fileSimilaritiesToCalculate, useLsi, numberOfLsiDimensions, maxLsiEpochs).calculateDocumentSimilarities().forEach { documentSimilarities.add(it) }
     }
 
     fun retrieveSimilaritiesAsListOfTriples(): List<Triple<String, String, Double>> {
