@@ -35,8 +35,8 @@ class JavaSourceCodeParser(selectedNaturalLanguage: NaturalLanguage, fileName: S
         private val CamelCaseRegex: Regex = Regex("([A-Z])([A-Z])([a-z])|([a-z])([A-Z])")
         private val PackageRegex: Regex = Regex("^(package)", RegexOption.MULTILINE)
         private val ImportRegex: Regex = Regex("^(import)", RegexOption.MULTILINE)
-        private val CommentRegex: Regex = Regex("(^\\s*\\/+)|(^\\s*\\*+)", RegexOption.MULTILINE)
-        private val DoubleQuoteStringRegex: Regex = Regex("(?<=\\\")(.*?)(?=(?<!\\\\)\\\")", RegexOption.DOT_MATCHES_ALL)
+        private val CommentRegex: Regex = Regex("(^\\s*/+)|(^\\s*\\*+)", RegexOption.MULTILINE)
+        private val DoubleQuoteStringRegex: Regex = Regex("(?<=\")(.*?)(?=(?<!\\\\)\")", RegexOption.DOT_MATCHES_ALL)
         private val ParserProgrammingLanguage: ProgrammingLanguage = ProgrammingLanguage.JAVA
     }
 }

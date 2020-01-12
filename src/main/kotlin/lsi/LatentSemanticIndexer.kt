@@ -13,9 +13,9 @@ class LatentSemanticIndexer(private val corpus: Corpus, private val dimensions: 
 
     fun retrieveDocumentVectors(documentA: Document, documentB: Document): Pair<DoubleArray, DoubleArray> {
         val indexA: Int = documentMap[documentA]
-            ?: throw IllegalAccessException("Document does not exist in local corpus.")
+                          ?: throw IllegalAccessException("Document does not exist in a local corpus.")
         val indexB: Int = documentMap[documentB]
-            ?: throw IllegalAccessException("Document does not exist in local corpus.")
+                          ?: throw IllegalAccessException("Document does not exist in a local corpus.")
 
         return Pair(documentVectors[indexA], documentVectors[indexB])
     }

@@ -60,7 +60,7 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
 
     private fun retrieveNormalizer(): Normalizer {
         return if (useLemmatizer) {
-            Lemmatizer(selectedNaturalLanguage)
+            Lemmatizer()
         } else {
             Stemmer(selectedNaturalLanguage)
         }

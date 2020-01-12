@@ -4,6 +4,8 @@ import codes.jakob.semanticcoupling.lsi.LatentSemanticIndexer
 import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.model.SemanticCoupling
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 class SimilarityCalculator(private val corpus: Corpus, private val documentSimilaritiesToCalculate: List<Pair<String, String>>?, private val useLsi: Boolean, numberOfLsiDimensions: Int, maxLsiEpochs: Int) {
@@ -52,13 +54,13 @@ class SimilarityCalculator(private val corpus: Corpus, private val documentSimil
 
         for (i: Int in vectorA.indices) {
             dotProduct += vectorA[i] * vectorB[i]
-            normA += Math.pow(vectorA[i], 2.0)
-            normB += Math.pow(vectorB[i], 2.0)
+            normA += vectorA[i].pow(2.0)
+            normB += vectorB[i].pow(2.0)
         }
 
-        val cosineSimilarity: Double = (dotProduct / (Math.sqrt(normA) * Math.sqrt(normB)))
+        val cosineSimilarity: Double = (dotProduct / (sqrt(normA) * sqrt(normB)))
 
-        if (cosineSimilarity == Double.NaN) return 0.0
+        if (cosineSimilarity.isNaN()) return 0.0
         return cosineSimilarity
     }
 
