@@ -37,7 +37,7 @@ class JavaSourceCodeParser(selectedNaturalLanguage: NaturalLanguage, fileName: S
         private val PackageRegex: Regex = Regex("^(package)", RegexOption.MULTILINE)
         private val ImportRegex: Regex = Regex("^(import)", RegexOption.MULTILINE)
         private const val SingleLineCommentToken: String = "//"
-        private val MultiLineCommentRegex: Regex = Regex("/\\*[\\s\\S]*?\\*/", RegexOption.MULTILINE)
+        private val MultiLineCommentRegex: Regex = Regex("\\/\\*[\\s\\S]*?\\*\\/", RegexOption.MULTILINE)
         private val DoubleQuoteStringRegex: Regex = Regex("(?<=\")(.*?)(?=(?<!\\\\)\")", RegexOption.DOT_MATCHES_ALL)
         private val ParserProgrammingLanguage: ProgrammingLanguage = ProgrammingLanguage.JAVA
     }

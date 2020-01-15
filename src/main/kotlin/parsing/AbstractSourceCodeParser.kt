@@ -69,7 +69,7 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
     }
 
     private fun filterOutMultiLineComments(line: String): String {
-        return line.replace(multiLineCommentRegex, "")
+        return multiLineCommentRegex.replace(line, "")
     }
 
     private fun isPackage(line: String): Boolean {
