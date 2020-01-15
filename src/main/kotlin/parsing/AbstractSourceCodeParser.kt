@@ -9,6 +9,7 @@ import codes.jakob.semanticcoupling.normalization.Normalizer
 import codes.jakob.semanticcoupling.normalization.Stemmer
 import codes.jakob.semanticcoupling.utility.Utilities.getResourceAsText
 import codes.jakob.semanticcoupling.utility.Utilities.isNonEmptyWordEntry
+import codes.jakob.semanticcoupling.utility.Word
 
 
 abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: NaturalLanguage, private val fileName: String, private val fileContents: String, private val useLemmatizer: Boolean) {
@@ -30,7 +31,7 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
     fun parse(): Document {
         val normalizer: Normalizer = retrieveNormalizer()
 
-        val tokenizedFileContents: List<Term> =
+        val tokenizedFileContents: Map<Word, List<Term>> =
             filterOutMultiLineComments(fileContents.replace("\r", ""))
                 .split("\n")
                 .filter { !isPackage(it) }
@@ -45,7 +46,7 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
                 .map { it.toLowerCase() }
                 .map { normalizer.normalizeWord(it) }
                 .map { Term(word = it) }
-                .toList()
+                .groupBy { it.word }
 
         return Document(name = fileName, terms = tokenizedFileContents)
     }

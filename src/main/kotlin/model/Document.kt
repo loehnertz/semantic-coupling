@@ -1,9 +1,11 @@
 package codes.jakob.semanticcoupling.model
 
+import codes.jakob.semanticcoupling.utility.Word
+
 
 data class Document(
     val name: String,
-    val terms: List<Term>
+    val terms: Map<Word, List<Term>>
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

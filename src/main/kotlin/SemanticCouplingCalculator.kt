@@ -29,7 +29,7 @@ class SemanticCouplingCalculator(private val files: Map<String, String>, private
     fun calculate() = runBlocking {
         documentSimilarities.clear()
         corpus = Corpus(files.entries.mapConcurrently { parseFile(fileName = it.key, fileContents = it.value) }.toMutableSet()).also { logger.info("Finished parsing ${it.documents.size} files.") }
-        corpus = TfIdfCalculator(corpus, if (useLsi) null else fileSimilaritiesToCalculate).calculateForAllTerms().also { logger.info("Finished processing ${it.documents.sumBy { document -> document.terms.size }} terms.") }
+        corpus = TfIdfCalculator(corpus, if (useLsi) null else fileSimilaritiesToCalculate).calculateForAllTerms().also { logger.info("Finished processing ${it.documents.sumBy { document -> document.terms.size }} term groups.") }
         SimilarityCalculator(corpus, fileSimilaritiesToCalculate, useLsi, numberOfLsiDimensions, maxLsiEpochs).calculateDocumentSimilarities().forEach { documentSimilarities.add(it) }.also { logger.info("Finished calculating all semantic similarity pairs.") }
     }
 

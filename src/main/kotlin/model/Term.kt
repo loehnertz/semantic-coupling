@@ -1,8 +1,10 @@
 package codes.jakob.semanticcoupling.model
 
+import codes.jakob.semanticcoupling.utility.Word
+
 
 data class Term(
-    val word: String,
+    val word: Word,
     var tfidf: Double? = null
 ) {
     override fun equals(other: Any?): Boolean {

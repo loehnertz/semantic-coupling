@@ -2,7 +2,7 @@ package codes.jakob.semanticcoupling.lsi
 
 import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
-import codes.jakob.semanticcoupling.model.Term
+import codes.jakob.semanticcoupling.utility.Word
 import com.aliasi.matrix.SvdMatrix
 
 
@@ -42,13 +42,13 @@ class LatentSemanticIndexer(private val corpus: Corpus, private val dimensions: 
     }
 
     private fun constructTermDocumentMatrix(): Array<DoubleArray> {
-        val allTerms: Set<Term> = corpus.documents.flatMap { it.terms }.toSet()
-        return allTerms.map { constructTermRow(it) }.toTypedArray()
+        val allWords: Set<Word> = corpus.documents.flatMap { it.terms.keys }.toSet()
+        return allWords.map { constructTermRow(it) }.toTypedArray()
     }
 
-    private fun constructTermRow(termForRow: Term): DoubleArray {
+    private fun constructTermRow(wordForRow: Word): DoubleArray {
         return corpus.documents.map { document: Document ->
-            document.terms.find { term: Term -> term.word == termForRow.word }?.tfidf ?: 0.0
+            document.terms[wordForRow]?.first()?.tfidf ?: 0.0
         }.toDoubleArray()
     }
 

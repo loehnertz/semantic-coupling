@@ -4,6 +4,7 @@ import codes.jakob.semanticcoupling.lsi.LatentSemanticIndexer
 import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.model.SemanticCoupling
+import codes.jakob.semanticcoupling.utility.Word
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -22,7 +23,7 @@ class SimilarityCalculator(private val corpus: Corpus, private val documentSimil
             for (documentB: Document in corpus.documents) {
                 if (documentA == documentB) continue
                 if (!documentSimilarityShouldBeCalculated(documentA, documentB)) continue
-                if (documentSimilarities.firstOrNull { documentTripleSimilarityAlreadyCalculated(it, documentA, documentB) } != null) continue
+                if (documentSimilarities.any { documentTripleSimilarityAlreadyCalculated(it, documentA, documentB) }) continue
 
                 val documentSimilarity: Double = calculateDocumentSimilarity(documentA, documentB)
                 val semanticCoupling = SemanticCoupling(documents = Pair(documentA, documentB), score = documentSimilarity)
@@ -65,14 +66,14 @@ class SimilarityCalculator(private val corpus: Corpus, private val documentSimil
     }
 
     private fun constructDocumentVectors(documentA: Document, documentB: Document): Pair<DoubleArray, DoubleArray> {
-        val allWords: List<String> = (documentA.terms + documentB.terms).map { it.word }.distinct().sorted()
+        val allWords: Set<Word> = (documentA.terms + documentB.terms).map { it.key }.toSet()
 
         val documentAWordVector: ArrayList<Double> = arrayListOf()
         val documentBWordVector: ArrayList<Double> = arrayListOf()
 
-        for (word: String in allWords) {
-            documentAWordVector.add(documentA.terms.find { it.word == word }?.tfidf ?: 0.0)
-            documentBWordVector.add(documentB.terms.find { it.word == word }?.tfidf ?: 0.0)
+        for (word: Word in allWords) {
+            documentAWordVector.add(documentA.terms[word]?.first()?.tfidf ?: 0.0)
+            documentBWordVector.add(documentB.terms[word]?.first()?.tfidf ?: 0.0)
         }
 
         return Pair(documentAWordVector.toDoubleArray(), documentBWordVector.toDoubleArray())
@@ -84,6 +85,6 @@ class SimilarityCalculator(private val corpus: Corpus, private val documentSimil
     }
 
     private fun documentTripleSimilarityAlreadyCalculated(semanticCoupling: SemanticCoupling, document1: Document, document2: Document): Boolean {
-        return ((semanticCoupling.documents.first == document1 && semanticCoupling.documents.second == document2) || (semanticCoupling.documents.first == document2 && semanticCoupling.documents.second == document1))
+        return ((semanticCoupling.documents.first.hashCode() == document1.hashCode() && semanticCoupling.documents.second.hashCode() == document2.hashCode()) || (semanticCoupling.documents.first.hashCode() == document2.hashCode() && semanticCoupling.documents.second.hashCode() == document1.hashCode()))
     }
 }
