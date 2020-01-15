@@ -20,7 +20,7 @@ class SemanticCouplingCalculator(private val files: Map<String, String>, private
     private val logger: Logger = LoggerFactory.getLogger(SemanticCouplingCalculator::class.java)
 
     private var useLemmatization = true
-    private var useLsi = true
+    private var useLsi = false
     private var numberOfLsiDimensions: Int = DefaultNumberOfLsiDimensions
     private var maxLsiEpochs: Int = DefaultMaxLsiEpochs
     private val documentSimilarities: ArrayList<SemanticCoupling> = arrayListOf()
