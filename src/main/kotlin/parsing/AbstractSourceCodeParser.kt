@@ -16,7 +16,9 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
 
     abstract val importRegex: Regex
 
-    abstract val commentRegex: Regex
+    abstract val singleLineCommentToken: String
+
+    abstract val multiLineCommentRegex: Regex
 
     abstract val programmingLanguageStopWords: List<String>
 
@@ -29,7 +31,7 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
         val normalizer: Normalizer = retrieveNormalizer()
 
         val tokenizedFileContents: List<Term> =
-            fileContents
+            filterOutMultiLineComments(fileContents.replace("\r", ""))
                 .split("\n")
                 .filter { !isPackage(it) }
                 .filter { !isImport(it) }
@@ -66,6 +68,10 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
         }
     }
 
+    private fun filterOutMultiLineComments(line: String): String {
+        return line.replace(multiLineCommentRegex, "")
+    }
+
     private fun isPackage(line: String): Boolean {
         return packageRegex.containsMatchIn(line)
     }
@@ -75,7 +81,7 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
     }
 
     private fun isComment(line: String): Boolean {
-        return commentRegex.containsMatchIn(line)
+        return line.startsWith(singleLineCommentToken)
     }
 
     companion object Constants {
