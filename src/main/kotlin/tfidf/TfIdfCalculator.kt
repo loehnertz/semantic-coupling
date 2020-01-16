@@ -3,17 +3,16 @@ package codes.jakob.semanticcoupling.tfidf
 import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.utility.mapConcurrently
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 
 
-class TfIdfCalculator(private val corpus: Corpus, documentSimilaritiesToCalculate: List<Pair<String, String>>?) {
-    private val documentsToConsider: Set<String>? = documentSimilaritiesToCalculate?.flatMap { listOf(it.first, it.second) }?.toSet()
+class TfIdfCalculator(private val corpus: Corpus) {
     private val idfCalculator = InverseDocumentFrequencyCalculator(corpus)
 
-    fun calculateForAllTerms(): Corpus = runBlocking {
-        return@runBlocking Corpus(corpus.documents.filter {
-            documentsToConsider?.contains(it.name) ?: true
-        }.mapConcurrently { calculateForDocument(it) }.toMutableSet())
+    fun calculateForAllTerms(dispatcher: CoroutineDispatcher = Dispatchers.Default) = runBlocking {
+        corpus.documents.mapConcurrently(dispatcher) { calculateForDocument(it) }
     }
 
     private fun calculateForDocument(document: Document): Document {

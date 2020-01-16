@@ -1,10 +1,10 @@
 package codes.jakob.semanticcoupling.utility
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 
 
-suspend fun <A, B> Iterable<A>.mapConcurrently(transform: suspend (A) -> B): List<B> = coroutineScope {
-    map { async { transform(it) } }.awaitAll()
+suspend fun <A, B> Iterable<A>.mapConcurrently(dispatcher: CoroutineDispatcher = Dispatchers.Default, transform: suspend (A) -> B): List<B> {
+    return coroutineScope {
+        map { async(dispatcher) { transform(it) } }.awaitAll()
+    }
 }

@@ -5,34 +5,46 @@ import codes.jakob.semanticcoupling.model.Corpus
 import codes.jakob.semanticcoupling.model.Document
 import codes.jakob.semanticcoupling.model.SemanticCoupling
 import codes.jakob.semanticcoupling.utility.Word
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 
-class SimilarityCalculator(private val corpus: Corpus, private val documentSimilaritiesToCalculate: List<Pair<String, String>>?, private val useLsi: Boolean, numberOfLsiDimensions: Int, maxLsiEpochs: Int) {
+class SimilarityCalculator(private val corpus: Corpus, private val documentSimilaritiesToCalculate: List<Set<String>>?, private val useLsi: Boolean, numberOfLsiDimensions: Int, maxLsiEpochs: Int) {
     private lateinit var latentSemanticIndexer: LatentSemanticIndexer
 
     init {
         if (useLsi) latentSemanticIndexer = LatentSemanticIndexer(corpus = corpus, dimensions = numberOfLsiDimensions, maxEpochs = maxLsiEpochs)
     }
 
-    fun calculateDocumentSimilarities(): List<SemanticCoupling> {
-        val documentSimilarities: ArrayList<SemanticCoupling> = arrayListOf()
+    fun calculateDocumentSimilarities(dispatcher: CoroutineDispatcher = Dispatchers.Default): List<SemanticCoupling> {
+        val documentSimilarities: ConcurrentLinkedDeque<SemanticCoupling> = ConcurrentLinkedDeque()
 
-        for (documentA: Document in corpus.documents) {
-            for (documentB: Document in corpus.documents) {
-                if (documentA == documentB) continue
-                if (!documentSimilarityShouldBeCalculated(documentA, documentB)) continue
-                if (documentSimilarities.any { documentTripleSimilarityAlreadyCalculated(it, documentA, documentB) }) continue
+        runBlocking {
+            for (documentA: Document in corpus.documents) {
+                launch(dispatcher) {
+                    for (documentB: Document in corpus.documents) {
+                        if (documentA == documentB) continue
 
-                val documentSimilarity: Double = calculateDocumentSimilarity(documentA, documentB)
-                val semanticCoupling = SemanticCoupling(documents = Pair(documentA, documentB), score = documentSimilarity)
+                        if (!documentSimilarityShouldBeCalculated(documentA, documentB)) continue
 
-                documentSimilarities.add(semanticCoupling)
+                        val semanticCoupling = SemanticCoupling(documents = setOf(documentA, documentB))
+
+                        if (documentSimilarities.contains(semanticCoupling)) continue
+
+                        semanticCoupling.score = calculateDocumentSimilarity(documentA, documentB)
+
+                        documentSimilarities.add(semanticCoupling)
+                    }
+                }
             }
         }
 
-        return documentSimilarities.toList().sortedByDescending { it.score }
+        return documentSimilarities.toList().distinctBy { it.documents }.sortedByDescending { it.score }
     }
 
     private fun calculateDocumentSimilarity(documentA: Document, documentB: Document): Double {
@@ -81,10 +93,6 @@ class SimilarityCalculator(private val corpus: Corpus, private val documentSimil
 
     private fun documentSimilarityShouldBeCalculated(document1: Document, document2: Document): Boolean {
         if (documentSimilaritiesToCalculate == null) return true
-        return documentSimilaritiesToCalculate.contains(Pair(document1.name, document2.name))
-    }
-
-    private fun documentTripleSimilarityAlreadyCalculated(semanticCoupling: SemanticCoupling, document1: Document, document2: Document): Boolean {
-        return ((semanticCoupling.documents.first.hashCode() == document1.hashCode() && semanticCoupling.documents.second.hashCode() == document2.hashCode()) || (semanticCoupling.documents.first.hashCode() == document2.hashCode() && semanticCoupling.documents.second.hashCode() == document1.hashCode()))
+        return documentSimilaritiesToCalculate.contains(setOf(document1.name, document2.name))
     }
 }
