@@ -40,11 +40,11 @@ abstract class AbstractSourceCodeParser(private val selectedNaturalLanguage: Nat
                 .flatMap { tokenize(it) }
                 .asSequence()
                 .filter { !naturalLanguageStopWords.contains(it) }
-                .filter { !it.matches(NumbersRegex) }
-                .filter { !it.matches(SingleCharacterRegex) }
+                .filter { !it.contains(NumbersRegex) }
                 .filter { isNonEmptyWordEntry(it) }
                 .map { it.toLowerCase() }
                 .map { normalizer.normalizeWord(it) }
+                .filter { !it.matches(SingleCharacterRegex) }
                 .map { Term(word = it) }
                 .groupBy { it.word }
 
